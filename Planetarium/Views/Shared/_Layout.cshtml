@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    </environment>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>@ViewBag.Title | Planetarium</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary bg-gradient mb-5">
+        <div class="container-fluid">
+            <b><a class="navbar-brand" href="#">@Html.ActionLink("Planetarium", "Index", "Home", new { area = "" }, new { @class = "navbar-brand text-light" })</a></b>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav me-auto">
+                    <a class="nav-link" href="#">@Html.ActionLink("Symulacja", "Index", "Home", new { area = "" }, new { @class = "nav-link text-light" })</a>
+                    <a class="nav-link" href="#">@Html.ActionLink("Informacje o układzie planetarnym", "StarSystemInfo", "Home", new { area = "" }, new { @class = "nav-link text-light" })</a>
+                    <a class="nav-link" href="#">@Html.ActionLink("Wybór układu planetarnego", "StarSystemChoice", "Home", new { area = "" }, new { @class = "nav-link text-light" })</a>
+                </div>
+                <span class="navbar-text text-light d"><b>Nazwa układu planetarnego:</B> @LocalData.SelectedSolarSystemName</span>
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Kacper Chrzanowski</p>
+        </footer>
+    </div>
+
+    @RenderSection("scripts", required: false)
+    <environment include="Development">
+        <script src="~/lib/bootstrap/js/bootstrap.bundle.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    </environment>
+</body>
+</html>

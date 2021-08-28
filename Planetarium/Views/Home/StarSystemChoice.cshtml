@@ -1,0 +1,122 @@
+﻿@using PlanetariumData;
+@model List<StarSystem>
+@{
+    ViewBag.Title = "Wybór układu planetarnego";
+    int selectedStarSystemId = LocalData.SelectedSolarSystem;
+}
+<head>
+
+</head>
+<body>
+    <table class="table table-dark table-bordered rounded-2 border border-1">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nazwa</th>
+                <th scope="col">Ustawienia</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (StarSystem starSystem in Model)
+            {
+                <tr id="row-@starSystem.Id">
+                    <th scope="row" class="id">@starSystem.Id</th>
+                    <td class="name">@starSystem.Name</td>
+                    <td>
+                        <div class="btn-group">
+                            <form method="post" action="/home/SetNewStarSystem">
+                                <input type="hidden" value="123" />
+                                <button type="submit" class="btn border-0 text-light editPlanetBtn" name="starSystemId" value="@starSystem.Id"><i class="far fa-check-square"></i></button>
+                            </form>
+                            @*<button class="btn border-0 text-light editPlanetBtn" onclick="ChooseNewStarSystem(@starSystem.Id)"><i class="far fa-check-square"></i></button>*@
+                            <button class="btn border-0 text-light editStarSystemBtn" data-bs-toggle="modal" data-bs-target="#editStarSystem"><i class="fas fa-edit"></i></button>
+                            <button class="btn border-0 text-light deleteStarSystemBtn" data-bs-toggle="modal" data-bs-target="#deleteStarSystem"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- modale -->
+    <!-- edycja układu gwiezdnego -->
+    <div class="modal fade" id="editStarSystem" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-dark">
+                <div class="modal-header bg-primary bg-gradient text-light">
+                    <h5 class="modal-title" id="starSystemModalLabel">Edytuj układ gwiezdny</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <form method="post" action="/home/EditStarSystem">
+                    <div class="modal-body">
+                        <label for="name" class="form-label">Nazwa układu gwiezdnego:</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Tu wprowadź nową nazwę układu..." />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                        <button type="submit" class="btn btn-primary editStarSystemSubmitBtn" value="editPlanet">Edytuj układ gwiezdny</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- usuwanie planety -->
+    <div class="modal fade" id="deleteStarSystem" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-dark">
+                <div class="modal-header bg-primary bg-gradient text-light">
+                    <h5 class="modal-title" id="exampleModalLabel">Usuń układ gwiezdny</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <form method="post" action="/home/DeleteStarSystem">
+                    <div class="modal-body">
+                        <label class="form-label">Czy na pewno chcesz usunąć układ gwiezdny?</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                        <button type="submit" class="btn btn-danger deleteStarSystemSubmitBtn" value="deleteStarSystem">Tak</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
+    <script>
+        @if(selectedStarSystemId != 0)
+        {
+            @:let row = document.getElementById("row-@selectedStarSystemId");
+            @:row.classList.add("table-primary");
+            @:row.getElementsByClassName("btn")[0].classList.add("text-dark")
+            @:row.getElementsByClassName("btn")[0].innerHTML = row.getElementsByClassName("btn")[0].innerHTML.replace("far", "fas")
+            @:row.getElementsByClassName("btn")[1].classList.add("text-dark")
+            @:row.getElementsByClassName("btn")[2].classList.add("text-dark")
+        }
+    </script>
+    <script>
+        $(".editStarSystemBtn").click(function () {
+            var $row = $(this).closest("tr");
+            var id = $row.find(".id").text();
+            var name = $row.find(".name").text();
+
+            $("#editStarSystem").find('.modal-body').attr("data-id", id);
+            $("#editStarSystem").find('input[name=name]').val(name);
+        });
+
+        $(".editStarSystemSubmitBtn").click(function () {
+            var id = $("#editStarSystem").find(".modal-body").data("id");
+            $("#editStarSystem").find(".modal-body").append("<input type='text' name='id' value='" + id + "' class='invisible'></input>");
+        });
+
+        $(".deleteStarSystemBtn").click(function () {
+            var $row = $(this).closest("tr");
+            var id = $row.find(".id").text();
+
+            $("#deleteStarSystem").find('.modal-body').attr("data-id", id);
+        });
+
+        $(".deleteStarSystemSubmitBtn").click(function () {
+            var id = $("#deleteStarSystem").find(".modal-body").data("id");
+            $("#deleteStarSystem").find(".modal-body").append("<input type='text' name='id' value='" + id + "' class='invisible'></input>");
+        });
+    </script>
+</body>

@@ -1,0 +1,184 @@
+﻿@using PlanetariumData;
+@model List<Planet>
+@{
+    ViewBag.Title = "Informacje o wybranym układzie planetarnym";
+}
+
+<div>
+    <table class="table table-dark table-bordered rounded-2 border border-1">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nazwa</th>
+                <th scope="col">Dystans od gwiazdy</th>
+                <th scope="col">Promień</th>
+                <th scope="col">Czas obiegu</th>
+                <th scope="col">Kolor obwodu</th>
+                <th scope="col">Kolor środka</th>
+                <th scope="col">Kierunek obrotu</th>
+                <th scope="col">Typ obiektu</th>
+                <th scope="col">Ustawienia</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Planet planet in Model)
+            {
+                <tr>
+                    <th scope="row" class="id">@planet.Id</th>
+                    <td class="name">@planet.Name</td>
+                    <td class="distanceFromStar">@planet.DistanceFromStar</td>
+                    <td class="radius">@planet.Radius</td>
+                    <td class="cycle">@planet.Cycle [@Math.Round((planet.Cycle/62.5),3)s]</td>
+                    <td class="surfaceColor">@planet.SurfaceColor<br /><div style="background-color: @planet.SurfaceColor; color: @planet.SurfaceColor">Kolor</div></td>
+                    <td class="coreColor">@planet.CoreColor<br /><div style="background-color: @planet.CoreColor; color: @planet.CoreColor">Kolor</div></td>
+                    <td class="isReversed">@((planet.Type != "Gwiazda") ? (planet.IsReversed ? "Lewo" : "Prawo") : "Brak")</td>
+                    <td class="type">@planet.Type</td>
+
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn border-0 text-light editPlanetBtn" data-bs-toggle="modal" data-bs-target="#editPlanet"><i class="fas fa-edit"></i></button>
+                            <button class="btn border-0 text-light deletePlanetBtn" data-bs-toggle="modal" data-bs-target="#deletePlanet"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- edycja planety -->
+    <div class="modal fade" id="editPlanet" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-dark">
+                <div class="modal-header bg-primary bg-gradient text-light">
+                    <h5 class="modal-title" id="exampleModalLabel">Edytuj planetę</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <form method="post" action="/home/EditPlanet">
+                    <div class="modal-body">
+                        <label for="name" class="form-label">Nazwa planety:</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Tu wprowadź nazwę planety..."/>
+
+                        <label for="distanceFromStar" class="form-label">Odległość od gwiazdy: <input class="border-0" id="distanceFromStar" name="distanceFromStar" value="0" /></label>
+                        <input type="range" class="form-range" id="distanceFromStar-range" min="0" max="10" step="0.01" value="0" oninput="distanceFromStar.value = this.value" />
+
+                        <label for="radius" class="form-label">Promień: <input class="border-0 " id="radius" name="radius" value="0" /></label>
+                        <input type="range" class="form-range" id="radius-range" min="2" max="60" step="0.1" value="2" oninput="radius.value = this.value">
+
+                        <label for="cycle" class="form-label">Długość cyklu: <input class="border-0 " id="cycle" name="cycle" value="10" /></label>
+                        <input type="range" class="form-range" id="cycle-range" min="11" max="1000" step="0.1" value="11" oninput="cycle.value = this.value">
+
+                        <label for="surfaceColor" class="form-label">Kolor powierzchni:</label>
+                        <input type="color" class="form-control form-control-color" id="surfaceColor" value="#000000" name="surfaceColor" />
+
+                        <label for="coreColor" class="form-label">Kolor środka:</label>
+                        <input type="color" class="form-control form-control-color" id="coreColor" value="#000000" name="coreColor" />
+
+                        <div class="mb-3 form-check">
+                            <br />
+                            <input type="checkbox" class="form-check-input" id="isReversed" name="isReversed" />
+                            <label for="isReversed" class="form-check-label">Obrót przeciwny do ruchu wskazówek zegara?</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                        <button type="submit" class="btn btn-primary editPlanetSubmitBtn" value="editPlanet">Zapisz zmiany</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- usuwanie planety -->
+    <div class="modal fade" id="deletePlanet" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-dark">
+                <div class="modal-header bg-primary bg-gradient text-light">
+                    <h5 class="modal-title" id="exampleModalLabel">Usuń planetę</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <form method="post" action="/home/DeletePlanet">
+                    <div class="modal-body">
+                        <label class="form-label">Czy na pewno chcesz usunąć planetę?</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                        <button type="submit" class="btn btn-danger deletePlanetSubmitBtn" value="deletePlanet">Tak</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
+</div>
+
+<script>
+        $(".editPlanetBtn").click(function () {
+            var $row = $(this).closest("tr");
+            var id = $row.find(".id").text();
+            var name = $row.find(".name").text();
+            var distanceFromStar = $row.find(".distanceFromStar").text();
+            var radius = $row.find(".radius").text();
+            var cycle = $row.find(".cycle").text().split('[')[0];
+            var surfaceColor = $row.find(".surfaceColor").text().replace("Kolor", "");
+            var coreColor = $row.find(".coreColor").text().replace("Kolor", "");
+            var coreColor = $row.find(".coreColor").text().replace("Kolor", "");
+            var isReversed = $row.find(".isReversed").text();
+            var isStar = $row.find(".type").text().includes("Gwiazda");
+            @if (Model.Count > 0)
+            {
+                @:var starRadius = parseFloat('@Model.First().Radius');
+            }
+            $("#editPlanet").find('.modal-body').attr("data-id", id)
+            $("#editPlanet").find('input[name=name]').val(name);
+            $("#editPlanet").find('input[name=distanceFromStar]').val(distanceFromStar);
+            $("#editPlanet").find('#distanceFromStar-range').val(distanceFromStar.replace(',', '.'));
+            $("#editPlanet").find('#distanceFromStar-range').attr("min", (starRadius * 0.033).toFixed(1));
+            $("#editPlanet").find('input[name=radius]').val(radius);
+            $("#editPlanet").find('#radius-range').val(radius.replace(',', '.'));
+            $("#editPlanet").find('input[name=cycle]').val(cycle);
+            $("#editPlanet").find('#cycle-range').val(parseFloat(cycle.replace(',', '.')));
+            $("#editPlanet").find('input[name=surfaceColor]').val(surfaceColor);
+            $("#editPlanet").find('input[name=coreColor]').val(coreColor);
+            $("#editPlanet").find('input[name=isReversed]').val((isReversed == "Lewo") ? "True" : "False");
+            $("#editPlanet").find('input[name=isReversed]').prop("checked", isReversed == "Lewo" ? true : false);
+
+            if (isStar) {
+            $("#editPlanet").find('#distanceFromStar').val(0);
+            $("#editPlanet").find('#cycle').val(0);
+            $("#editPlanet").find('#isReversed').val("false");
+            }
+            $("#editPlanet").find('#distanceFromStar').attr("readonly", isStar ? true : false);
+            $("#editPlanet").find('#distanceFromStar-range').attr("disabled", isStar ? true : false);
+
+            $("#editPlanet").find('#cycle').attr("readonly", isStar ? true : false);
+            $("#editPlanet").find('#cycle-range').attr("disabled", isStar ? true : false);
+
+            $("#editPlanet").find('#isReversed').attr("readonly", isStar ? true : false);
+            });
+
+        $(".editPlanetSubmitBtn").click(function () {
+            var id = $("#editPlanet").find(".modal-body").data("id");
+            $("#editPlanet").find(".modal-body").append("<input type='text' name='id' value='" + id + "' class='invisible'></input>")
+        });
+
+        $(".deletePlanetBtn").click(function () {
+            var $row = $(this).closest("tr");
+            var id = $row.find(".id").text();
+
+            $("#deletePlanet").find('.modal-body').attr("data-id", id)
+        });
+
+        $(".deletePlanetSubmitBtn").click(function () {
+            var id = $("#deletePlanet").find(".modal-body").data("id");
+            $("#deletePlanet").find(".modal-body").append("<input type='text' name='id' value='" + id + "' class='invisible'></input>")
+        });
+
+        $('form').on('change', ':checkbox', function () {
+            if (this.checked) {
+                $(this).val(true);
+            }
+            else {
+                $(this).val(false);
+            }
+        });
+
+</script>
